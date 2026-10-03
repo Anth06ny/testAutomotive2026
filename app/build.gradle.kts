@@ -1,3 +1,5 @@
+import shadow.bundletool.com.android.tools.r8.internal.On
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -6,7 +8,10 @@ plugins {
 }
 
 android {
+
+
     namespace = "com.amonteiro.testautomotive"
+    useLibrary("android.car")
     compileSdk {
         version = release(37)
     }
@@ -35,6 +40,18 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    //On peut mettre les noms que l'on souhaite
+    flavorDimensions += "platform"
+    productFlavors {
+        create("mobile") {
+            dimension = "platform"
+        }
+        create("automotive") {
+            dimension = "platform"
+        }
     }
 }
 

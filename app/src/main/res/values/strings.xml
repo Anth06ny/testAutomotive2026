@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">testAutomotive</string>
+    <string name="searchText">Find on mobile</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.amonteiro.testautomotive.ui
 
+import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -14,9 +15,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
@@ -37,7 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_TYPE_NORMAL
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.amonteiro.testautomotive.BuildConfig
 import com.amonteiro.testautomotive.MainViewModel
 import com.amonteiro.testautomotive.R
 import com.amonteiro.testautomotive.data.Weather
@@ -100,7 +106,9 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
             CircularProgressIndicator()
         }
 
-        LazyColumn(
+        val nbColumn = if (BuildConfig.FLAVOR == "automotive") 2 else 1
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(nbColumn),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(1.0f)
         ) {
@@ -136,6 +144,22 @@ fun SearchScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel = v
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text("Load Data")
             }
+
+            val isAutomotive = LocalContext.current.packageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)
+            if (isAutomotive) {
+                Button(
+                    onClick = { },
+                    contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+                ) {
+                    Icon(
+                        Icons.Filled.Face,
+                        contentDescription = "Localized description",
+                        modifier = Modifier.size(ButtonDefaults.IconSize)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text("Car")
+                }
+            }
         }
 
 
@@ -158,7 +182,7 @@ fun SearchBar(modifier: Modifier = Modifier, searchText: MutableState<String>) {
         },
         singleLine = true,
         label = { //Texte d'aide qui se déplace
-            Text("Enter text")
+            Text(stringResource(R.string.searchText))
             //Pour aller le chercher dans string.xml, R de votre package com.nom.projet
             //Text(stringResource(R.string.placeholder_search))
         },
@@ -225,25 +249,5 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: Weather) {
         }
 
 
-    }
-}
-
-
-//Le composant est réutilisable avec n'importe quelle chaine de caractère
-@Composable
-fun MyError(
-    modifier: Modifier = Modifier,
-    errorMessage: String? = null
-) {
-    //permet d'afficher / masquer l'erreur avec une animation
-    AnimatedVisibility(!errorMessage.isNullOrBlank()) {
-        Text(
-            text = errorMessage ?: "",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onError,
-            modifier = modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.error)
-        )
     }
 }
