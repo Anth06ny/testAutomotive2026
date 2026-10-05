@@ -22,6 +22,7 @@ import androidx.car.app.model.Template
 import androidx.core.graphics.drawable.IconCompat
 import com.amonteiro.testautomotive.MainActivity
 import com.amonteiro.testautomotive.R
+import kotlin.concurrent.thread
 
 class MainScreen(carContext: CarContext) : Screen(carContext) {
 
@@ -54,14 +55,25 @@ class MainScreen(carContext: CarContext) : Screen(carContext) {
 
         //besoin de mettre l'autorisation
         //PATH_TO_SDK\platform-tools\adb.exe shell pm grant --user current com.amonteiro.testautomotive android.car.permission.CAR_ENERGY
+        //C:\Users\anth0\AppData\Local\Android\Sdk\platform-tools\adb.exe shell pm grant --user current com.amonteiro.testautomotive android.car.permission.CAR_ENERGY
         // Lecture du niveau de carburant (en mL)
-        try {
-            val prop = carPropertyManager?.getProperty<Float>(VehiclePropertyIds.FUEL_LEVEL, 0)
-            val ml = prop?.value ?: 0f
-            fuelLevel = "${ml / 1000} L"
-        } catch (e: Exception) {
-            e.printStackTrace()
+
+        thread {
+            while(true) {
+                try {
+                    val prop =
+                        carPropertyManager?.getProperty<Float>(VehiclePropertyIds.FUEL_LEVEL, 0)
+                    val ml = prop?.value ?: 0f
+                    fuelLevel = "${ml / 1000} L"
+                    invalidate()
+                    Thread.sleep(5000)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
+
+
     }
 
     override fun onGetTemplate(): Template {

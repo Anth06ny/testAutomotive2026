@@ -10,6 +10,7 @@ plugins {
 android {
 
 
+
     namespace = "com.amonteiro.testautomotive"
     useLibrary("android.car")
     compileSdk {
